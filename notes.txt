@@ -1,0 +1,77 @@
+
+pager.vim
+---------
+
+v F to follow
+v ctrl-c to stop following
+v q to quit
+. handle (color) escape sequences
+    --> use AnsiEsc.vim
+. show messages in grey reversed to indicate follow/no-follow
+
+================================================================================
+. qi script
+    . meant to be sourced?
+        . contains bash functions
+
+    . or to be run?
+        . takes command name as 1st argument
+
+. Run 'qi' at command line
+    . if inside tmux session: abort
+    . 'tmux list-sessions' is run to check for existing 'qi[0-9]*' sessions
+    . a new tmux session 'qi<N>' is created (and attached to)
+    . Two L/R panes are created
+    . In the L pane: vim is launched (no underlying bash?)
+        --> remap 'quit' keybindings (like ZZ, ZQ, C-F12, A-F12, ...) to only close file without quitting vim
+        --> new keybinding to quit vim
+    . In the R pane: bash terminal
+    . Optional argument: file to be opened by vim in L pane
+
+. Run 'qi' by piping input into it:
+    . example: some_command | qi
+    . if not inside tmux session:
+        . create new qi tmux session
+        . tail output of some_command in R pane
+    . if inside non-qi tmux session: abort
+    . if inside other 'qi[0-9]*' session:
+        . tail output of some_command in R pane
+
+. qi commands:
+    create : create 2-pane tmux session
+        --> needed? wouldn't this be the default action without arguments?
+
+    run : run a given command, pipe the output to a logfile and tail that file in the R pane. The following commands will make use of 'run':
+
+    buildfile : compile 1 file
+    build : Walk up dir path given as argument. As soon as a makefile is found: make
+    buildall : Walk up dir path given as argument. If a makefile is found, store its path in a variable. Overwrite this value every time. Continue until root dir. Run make on makefile in variable.
+
+    cleanfile
+    clean
+    cleanall
+
+
+. 2 tmux panes
+    . L : vim
+    . R : less +F ~/log/latest.txt
+    --> name them E(dit) & O(utput)? Position on screen configurable.
+        3rd pane C(ommand)
+
+. auto-reload file in vim:
+    :h autoread
+
+. vim async features:
+    :h timer_start
+    :h channel
+
+. things needed along with qi:
+    . rabot
+    . vim as pager
+    . babs
+
+    not necessary:
+        . preppy
+        . vim plugins
+
+

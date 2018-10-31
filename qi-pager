@@ -1,0 +1,31 @@
+#!/bin/bash
+
+. rabot-utils
+if [ "$?" -ne "0" ]; then
+  echo "$0: Error while sourcing rabot-utils" >&2
+  exit 1
+fi
+
+function showHelp
+{
+cat << DOCSTRING
+Usage: $(basename "$0")
+
+'$(basename "$0")' uses 'vim' as a pager
+DOCSTRING
+}
+
+checkForHelp $1
+
+qiDir="$(readlink -f "$(dirname $0)")"
+
+vimScript="$qiDir/pager.vim"
+
+if [ "$?" = 2 ]; then
+    if [ "$1" = "+F" ]; then
+        echo follow
+    else
+        exitWith 1 "Unrecognized first argument: '$1'"
+    fi
+fi
+
