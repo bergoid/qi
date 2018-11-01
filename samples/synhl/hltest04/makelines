@@ -2,9 +2,20 @@
 
 C=0
 
-while read line; do
-    pC="$(printf "%0*d" 3 $C)"
-#    echo highlight C$pC ctermfg=$pC guifg=$line
-    echo "syntax region C$pC matchgroup=EscSeq start=\"\e\[38;5;${C}m\" end=\"\e\[0m\" concealends"
+while IFS=$'\015' read hexValue; do
+
+    if [ $(($C % 8)) == 0 ]; then
+        printf "extend(hexValues, [ "
+    else
+        printf ", "
+    fi
+
+    printf "\"$hexValue\""
+
     ((C++))
+
+    if [ $(($C % 8)) == 0 ]; then
+        printf " ])\n"
+    fi
+
 done < rgb_values.txt
