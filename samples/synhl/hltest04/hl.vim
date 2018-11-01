@@ -43,13 +43,24 @@ call extend(palette256, [ "#a8a8a8", "#b2b2b2", "#bcbcbc", "#c6c6c6", "#d0d0d0",
 set conceallevel=2
 set concealcursor=nvc
 highlight EscSeq ctermfg=Brown guifg=Brown
+highlight IgnoreEscSeq ctermfg=Brown guifg=Brown
+
+" Ignore all "Erase in line" commands: 'ESC[K' with an optional numerical
+" sequence before the 'K'
+syntax match IgnoreEscSeq "\e\[\([0-9]\+\)\?K" conceal
+syntax match IgnoreEscSeq "\e\[\([0-9]\+\)\?K" contained conceal
 
 " Loop over 16 system colors
 let counter = 0
 for colorRGB in palette16
 
     " Define syntax group
-    execute 'syntax region Color' . printf("%03d", counter) . ' matchgroup=EscSeq start="\e\[' . counter/8 . ';' . (30+counter%8) . 'm" end="\e\[0m" concealends'
+    execute 'syntax region Color' . printf("%03d", counter) . ' matchgroup=EscSeq start="\e\[\(0\)\?' . counter/8 . ';' . (30+counter%8) . 'm" end="\e\[\(0\)\?m" contains=IgnoreEscSeq concealends'
+
+    if counter < 8
+        execute 'syntax region Color' . printf("%03d", counter) . ' matchgroup=EscSeq start="\e\[' . (30+counter%8) . 'm" end="\e\[\(0\)\?m" contains=IgnoreEscSeq concealends'
+    endif
+
     let counter += 1
 
 endfor
@@ -59,7 +70,7 @@ let counter = 0
 for colorRGB in palette256
 
     " Define syntax group
-    execute 'syntax region Color' . printf("%03d", counter) . ' matchgroup=EscSeq start="\e\[38;5;' . counter . 'm" end="\e\[0m" concealends'
+    execute 'syntax region Color' . printf("%03d", counter) . ' matchgroup=EscSeq start="\e\[38;5;' . counter . 'm" end="\e\[\(0\)\?m" contains=IgnoreEscSeq concealends'
 
     " Define highlighting group
     let paddedCounter = printf("%03d", counter)
